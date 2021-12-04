@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    let ssaa = {10*10*10};
 }

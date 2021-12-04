@@ -1,0 +1,3 @@
+
+format:
+	cargo fmt

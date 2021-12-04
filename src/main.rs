@@ -1,3 +1,3 @@
 fn main() {
-    let _ssaa = {10 * 10 * 10 };
+    let _ssaa = { 10 * 10 * 10 };
 }

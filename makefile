@@ -16,8 +16,13 @@ PGUSER ?= $(firstword $(DB_USER) postgres)
 
 DATABASE_URL ?= postgres://$(PGUSER):$(PGPASSWORD)@/$(PGDATABASE)?host=$(PGHOST)
 
+test:
+	@cargo test
+
 init:
 	@$(if $(shell which diesel),,cargo install diesel_cli --no-default-features --features postgres 2> /dev/null)
+	@sudo service postgresql restart
+	@cd migrations > /dev/null; diesel database reset; cd ../..
 
 # Run all the necessary database migrations.
 migrate: 

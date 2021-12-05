@@ -1,1 +1,6 @@
 /target
+
+# dotenv environment variables file
+.env
+.env.test
+envs/local.env

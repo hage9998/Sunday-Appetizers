@@ -1,6 +1,3 @@
-# ENV ?= dev
-# Include configurable flags.
-# include envs/$(ENV).env
 -include envs/local.env
 
 # Database host.
@@ -15,6 +12,8 @@ PGPOOLSIZE ?= $(firstword $(DB_POOL_SIZE) $(shell nproc))
 PGUSER ?= $(firstword $(DB_USER) postgres)
 
 DATABASE_URL ?= postgres://$(PGUSER):$(PGPASSWORD)@/$(PGDATABASE)?host=$(PGHOST)
+
+export
 
 test:
 	@cargo test

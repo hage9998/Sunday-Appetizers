@@ -10,9 +10,9 @@ requiredLength = 15
 commitMessageFile = open(sys.argv[1]) #The first argument is the file
 commitMessage = commitMessageFile.read().strip()
 
-feat = re.search('^feat/', commitMessage)
-fix = re.search('^fix/', commitMessage)
-chore = re.search('^chore/', commitMessage)
+feat = re.search('^feat:', commitMessage)
+fix = re.search('^fix:', commitMessage)
+chore = re.search('^chore:', commitMessage)
 
 if feat or fix or chore:
 	print("Starting commit...")

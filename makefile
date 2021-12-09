@@ -23,6 +23,7 @@ init:
 	@$(if $(shell which diesel),,cargo install diesel_cli --no-default-features --features postgres 2> /dev/null)
 	@sudo service postgresql restart
 	@cd migrations > /dev/null; diesel database reset; cd ../..
+	@git config --local include.path ../.gitconfig
 
 # Run all the necessary database migrations.
 migrate: 
@@ -35,3 +36,4 @@ revert:
 # Create a new migration based on the `NAME` variable.
 migration:
 	@cd migrations; diesel migration generate $(NAME); cd ../..
+

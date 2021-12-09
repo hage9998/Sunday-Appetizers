@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import sys, re
+
+#Required parts 
+requiredRegex = "[A-Z]{2,}-\\d+"
+requiredLength = 15
+
+#Get the commit file
+commitMessageFile = open(sys.argv[1]) #The first argument is the file
+commitMessage = commitMessageFile.read().strip()
+
+feat = re.search('^feat/', commitMessage)
+fix = re.search('^fix/', commitMessage)
+chore = re.search('^chore/', commitMessage)
+
+if feat or fix or chore:
+	print("Starting commit...")
+else:
+	print("Commit message does not follows right patterns\n")
+	print("Missing: feat/fix/chore prefix")
+	sys.exit(1)
+sys.exit(0)

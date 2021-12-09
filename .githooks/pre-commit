@@ -1,0 +1,39 @@
+#!/bin/bash
+check_char='\xE2\x9C\x93'
+cross_char='\xE2\x9D\x8C'
+green='\033[0;32m'
+nc='\033[0m'
+check="$green$check_char$nc"
+errors=0
+
+set -eu
+
+echo -e "Checking formatting... \n"
+if ! cargo fmt -- --check
+then
+    echo -e "\nThere are some code style issues."
+    echo "Run cargo fmt first."
+    exit 1
+else
+    echo -e "Format pre commit $check\n"
+fi
+
+echo -e "Running clippy... \n"
+if ! cargo clippy --all-targets -- -D warnings
+then
+    echo -e "\nThere are some clippy issues."
+    exit 1
+else
+    echo -e "\n Clippy pre commit $check\n"
+fi
+
+echo -e "Running tests... \n"
+if ! cargo test
+then
+    echo -e "\nThere are some test issues."
+    exit 1
+else
+    echo -e "Test pre commit $check\n"
+fi
+
+exit 0

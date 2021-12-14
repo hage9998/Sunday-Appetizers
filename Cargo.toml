@@ -11,7 +11,13 @@ serde = { version = "1.0.130", features = ["derive"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 factori = "1.1.0"
+diesel-derive-enum = { version = "1.1.1", features = ["postgres"] }
+bigdecimal = { version = "0.1.2", features = ["serde"] }
+proc-macro2 = "1.0.29"
+quote = "1.0.9"
+heck = "0.3.3"
+syn = { version = "1.0.77", features = ["full"] }
 
 [dependencies.diesel]
-features = ["chrono", "postgres", "r2d2", "uuidv07"]
+features = ["chrono", "postgres", "r2d2", "uuidv07", "64-column-tables", "numeric"]
 version = "1.4.8"

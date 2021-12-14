@@ -16,3 +16,21 @@ table! {
       customer_email -> Text,
   }
 }
+
+table! {
+  use diesel::sql_types::*;
+  use crate::models::product::product_data::*;
+
+  /// Products.
+  pate.products (id) {
+      /// Identifier of the product.
+      #[sql_name = "product_id"]
+      id -> Integer,
+      /// Product price.
+      product_price -> Numeric,
+      /// Product name.
+      product_name -> Text,
+      /// Product type.
+      product_type -> TypesProdMapping,
+  }
+}

@@ -11,7 +11,7 @@ PGPOOLSIZE ?= $(firstword $(DB_POOL_SIZE) $(shell nproc))
 # Database user
 PGUSER ?= $(firstword $(DB_USER) postgres)
 
-DATABASE_URL ?= postgres://$(PGUSER):$(PGPASSWORD)@/$(PGDATABASE)?host=$(PGHOST)
+DATABASE_URL := postgres://$(PGUSER):$(PGPASSWORD)@/$(PGDATABASE)?host=$(PGHOST)
 
 export
 
@@ -22,7 +22,7 @@ init:
 	@$(if $(shell which diesel),,cargo install diesel_cli --no-default-features --features postgres 2> /dev/null)
 	@sudo service postgresql restart
 	@cd migrations > /dev/null; diesel database reset; cd ../..
-	@git config --local include.path ../.gitconfig
+	@git config --local core.hooksPath .githooks/
 
 # Run all the necessary database migrations.
 migrate: 

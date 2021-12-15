@@ -8,11 +8,11 @@ use uuid::Uuid;
 #[serde(rename_all = "camelCase")]
 #[table_name = "customers"]
 pub struct Customer {
-    id: Uuid,
-    first_name: String,
-    last_name: String,
-    customer_phone: String,
-    customer_email: String,
+    pub id: Uuid,
+    pub first_name: String,
+    pub last_name: String,
+    pub customer_phone: String,
+    pub customer_email: String,
 }
 
 impl Customer {

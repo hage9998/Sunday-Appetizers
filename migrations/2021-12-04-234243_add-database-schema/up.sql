@@ -44,15 +44,15 @@ CREATE TABLE IF NOT EXISTS pate.customer_orders_product(
 );
 
 CREATE TABLE IF NOT EXISTS pate.adresses(
-  adress_id SERIAL PRIMARY KEY,
-  adress_street TEXT NOT NULL,
-  adress_number INT NOT NULL,
-  adress_district TEXT NOT NULL,
+  address_id SERIAL PRIMARY KEY,
+  address_street TEXT NOT NULL,
+  address_number INT NOT NULL,
+  address_district TEXT NOT NULL,
   zip_postcode TEXT NOT NULL,
   city_name TEXT NOT NULL,
   state_name TEXT NOT NULL,
   country_name TEXT NOT NULL,
-  other_adress_details TEXT
+  other_address_details TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pate.customer_adresses(

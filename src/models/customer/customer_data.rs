@@ -16,7 +16,6 @@ pub struct Customer {
 }
 
 impl Customer {
-    #[allow(dead_code)]
     pub fn create_many(conn: &PgConnection, customer: &[Customer]) -> QueryResult<usize> {
         diesel::insert_into(customers::table)
             .values(customer)
@@ -57,12 +56,12 @@ mod tests {
     }
 
     #[test]
-    fn should_list_customers_correctly() {
+    fn should_list_all_customers_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
             let customers = vec![factori::create!(Customer), factori::create!(Customer)];
             Customer::create_many(&conn, &customers).unwrap();
-            let customers_result = customers::table.load::<Customer>(&conn)?;
+            let customers_result = Customer::list_all(&conn).unwrap();
             assert_eq!(customers_result.len(), 2);
             Ok(())
         });

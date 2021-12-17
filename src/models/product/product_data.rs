@@ -47,7 +47,6 @@ mod tests {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
             let customers = vec![factori::create!(Product)];
-            println!("{:?}", customers[0]);
             Product::create_many(&conn, &customers).unwrap();
             let customers_result = products::table.load::<Product>(&conn).unwrap();
             assert_eq!(customers_result, customers);

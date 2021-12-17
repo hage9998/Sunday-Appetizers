@@ -34,3 +34,30 @@ table! {
       product_type -> TypesProdMapping,
   }
 }
+
+table! {
+  use diesel::sql_types::*;
+
+  /// Adresses.
+  pate.adresses (id) {
+      /// Identifier of the address.
+      #[sql_name = "address_id"]
+      id -> Integer,
+      /// Address street
+      address_street -> Text,
+      /// Address number
+      address_number -> Integer,
+      /// Address district
+      address_district -> Text,
+      /// Address postcode
+      zip_postcode -> Text,
+      /// City name
+      city_name -> Text,
+      /// State name
+      state_name -> Text,
+      /// Country name
+      country_name -> Text,
+      /// Address details
+      other_address_details -> Text,
+  }
+}

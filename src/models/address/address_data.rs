@@ -1,20 +1,32 @@
-use crate::schemas::table_schemas::adresses;
+use crate::schemas::table_schemas::{adresses, customer_adresses};
 use diesel::{self, prelude::*, Insertable, Queryable};
 use diesel::{PgConnection, QueryResult};
+use uuid::Uuid;
 
 #[derive(Insertable, Debug, PartialEq, Clone, Queryable, Identifiable, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "adresses"]
 pub struct Address {
+    pub id: i32,
+    pub address_street: String,
+    pub address_number: i32,
+    pub address_district: String,
+    pub zip_postcode: String,
+    pub city_name: String,
+    pub state_name: String,
+    pub country_name: String,
+    pub other_address_details: String,
+}
+
+#[derive(
+    Associations, Insertable, Debug, PartialEq, Clone, Queryable, Identifiable, serde::Serialize,
+)]
+#[table_name = "customer_adresses"]
+#[belongs_to(Customer, Address foreign_key= "customer_id, address_id")]
+pub struct CustomerAddress {
     id: i32,
-    address_street: String,
-    address_number: i32,
-    address_district: String,
-    zip_postcode: String,
-    city_name: String,
-    state_name: String,
-    country_name: String,
-    other_address_details: String,
+    customer_id: Uuid,
+    address_id: i32,
 }
 
 impl Address {
@@ -33,12 +45,33 @@ impl Address {
             .filter(adresses::id.eq(address_id))
             .first(conn)
     }
+
+    pub fn list_customer_address_by_customer_id(
+        conn: &PgConnection,
+        customer_id: &Uuid,
+    ) -> QueryResult<Vec<Self>> {
+        customer_adresses::table
+            .inner_join(adresses::table)
+            .filter(customer_adresses::customer_id.eq(customer_id))
+            .select(adresses::all_columns)
+            .load::<Address>(conn)
+    }
+}
+
+impl CustomerAddress {
+    pub fn create(conn: &PgConnection, customer_address: &CustomerAddress) -> QueryResult<usize> {
+        diesel::insert_into(customer_adresses::table)
+            .values(customer_address)
+            .execute(conn)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::models::address::address_data::mocks::*;
+    use crate::models::customer::customer_data::mocks::*;
+    use crate::models::customer::customer_data::Customer;
     use diesel::connection::Connection;
     use diesel::result::Error;
     use factori;
@@ -82,6 +115,39 @@ mod tests {
             Ok(())
         });
     }
+
+    #[test]
+    fn should_insert_customer_adresses_correctly() {
+        let conn = establish_connection();
+        conn.test_transaction::<_, Error, _>(|| {
+            let adresses = vec![factori::create!(Address)];
+            Address::create_many(&conn, &adresses).unwrap();
+            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            Customer::create_many(&conn, &customers).unwrap();
+            let customer_adresses = factori::create!(CustomerAddress, customer_id:customers[0].id, address_id:adresses[0].id);
+            CustomerAddress::create(&conn, &customer_adresses).unwrap();
+            let customer_adresses_result= customer_adresses::table.first::<CustomerAddress>(&conn)?;
+            assert_eq!(customer_adresses_result, customer_adresses);
+            Ok(())
+        });
+    }
+
+    #[test]
+    fn should_list_customer_adress_by_id_correctly() {
+        let conn = establish_connection();
+        conn.test_transaction::<_, Error, _>(|| {
+            let adresses = vec![factori::create!(Address)];
+            Address::create_many(&conn, &adresses).unwrap();
+            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            Customer::create_many(&conn, &customers).unwrap();
+            let customer_adresses = factori::create!(CustomerAddress, customer_id:customers[0].id, address_id:adresses[0].id);
+            CustomerAddress::create(&conn, &customer_adresses).unwrap();
+            let customer_address  =
+            Address::list_customer_address_by_customer_id(&conn, &customers[0].id)?;
+            assert_eq!(customer_address, adresses);
+            Ok(())
+        });
+    }
 }
 
 pub mod mocks {
@@ -99,6 +165,14 @@ pub mod mocks {
             state_name = String::from("SP"),
             country_name = String::from("Brazil"),
             other_address_details = String::from("Proximo ao posto"),
+        }
+    });
+
+    factori::factori!(CustomerAddress, {
+        default {
+            customer_id = Uuid::new_v4(),
+            address_id = 1,
+            id = 1,
         }
     });
 }

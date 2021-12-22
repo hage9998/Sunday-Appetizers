@@ -58,6 +58,6 @@ CREATE TABLE IF NOT EXISTS pate.adresses(
 CREATE TABLE IF NOT EXISTS pate.customer_adresses(
 	customer_id uuid REFERENCES pate.customers,
 	address_id INT REFERENCES pate.adresses,
-	custormer_address_id SERIAL,
-	PRIMARY KEY(customer_id, address_id, custormer_address_id)
+	customer_address_id SERIAL,
+	PRIMARY KEY(customer_id, address_id, customer_address_id)
 );

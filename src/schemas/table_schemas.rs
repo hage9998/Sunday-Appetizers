@@ -37,7 +37,6 @@ table! {
 
 table! {
   use diesel::sql_types::*;
-
   /// Adresses.
   pate.adresses (id) {
       /// Identifier of the address.
@@ -61,3 +60,20 @@ table! {
       other_address_details -> Text,
   }
 }
+
+table! {
+  use diesel::sql_types::*;
+  /// Customer Adresses.
+  pate.customer_adresses (id) {
+      /// Identifier of the customer address.
+      #[sql_name = "customer_address_id"]
+      id -> Integer,
+      /// Customer id
+      customer_id -> Uuid,
+      /// Address id
+      address_id -> Integer,
+  }
+}
+
+allow_tables_to_appear_in_same_query!(customer_adresses, adresses);
+joinable!(customer_adresses -> adresses (address_id));

@@ -1,7 +1,10 @@
 use crate::diesel::RunQueryDsl;
+use crate::models::errors::error::ApiError;
 use crate::schemas::table_schemas::customers;
+use argon2::Config;
 use diesel::{self, prelude::*, Insertable, QueryDsl, Queryable};
 use diesel::{PgConnection, QueryResult};
+use rand::Rng;
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone, Queryable, Identifiable, Insertable, serde::Serialize)]
@@ -13,9 +16,35 @@ pub struct Customer {
     pub last_name: String,
     pub customer_phone: String,
     pub customer_email: String,
+    pub login: String,
+    #[serde(skip_serializing)]
+    pub password: String,
 }
 
 impl Customer {
+    pub fn build(conn: &PgConnection, mut customer: Customer) -> Result<Self, ApiError> {
+        customer.hash_password()?;
+        let customer = diesel::insert_into(customers::table)
+            .values(customer)
+            .get_result(conn)?;
+
+        Ok(customer)
+    }
+
+    pub fn hash_password(&mut self) -> Result<(), ApiError> {
+        let salt: [u8; 32] = rand::thread_rng().gen();
+        let config = Config::default();
+
+        self.password = argon2::hash_encoded(self.password.as_bytes(), &salt, &config)
+            .map_err(|e| ApiError::new(500, format!("Failed to hash password: {}", e)))?;
+        Ok(())
+    }
+
+    pub fn verify_password(&self, password: &[u8]) -> Result<bool, ApiError> {
+        argon2::verify_encoded(&self.password, password)
+            .map_err(|e| ApiError::new(500, format!("Failed to verify password: {}", e)))
+    }
+
     pub fn create_many(conn: &PgConnection, customer: &[Customer]) -> QueryResult<usize> {
         diesel::insert_into(customers::table)
             .values(customer)
@@ -94,6 +123,8 @@ pub mod mocks {
             last_name = String::from("hage"),
             customer_phone = String::from("329898989"),
             customer_email = String::from("lrchaves@gmail.com"),
+            login = String::from("hage9998"),
+            password = String::from("123"),
         }
     });
 }

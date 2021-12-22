@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS pate.customers(
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
-  customer_email TEXT NOT NULL
+  customer_email TEXT NOT NULL,
+  login TEXT NOT NULL,
+  password TEXT NOT NULL
 );
 
 CREATE TYPE pate.types_prod AS ENUM ('BEBIDA', 'SALGADOS', 'DOCE');

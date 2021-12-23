@@ -22,7 +22,7 @@ pub struct IndexResponse {
 pub async fn login(credentials: web::Json<Credentials>, session: Session) -> Result<HttpResponse> {
     let login = credentials.login.clone();
     let password = credentials.password.clone();
-    let conn = pate_project::establish_connection();
+    let conn = sunday_appetizers::establish_connection();
     let customer_id = credentials.customer_id;
 
     authenticate(&conn, &login, &password, &customer_id)?;

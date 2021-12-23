@@ -1,3 +1,3 @@
 pub mod auth;
-pub mod costumer;
+pub mod customer;
 pub mod register;

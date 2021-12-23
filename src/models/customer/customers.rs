@@ -65,12 +65,12 @@ impl Customer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::customer::customer_data::mocks::*;
+    use crate::models::customer::customers::mocks::*;
     use diesel::connection::Connection;
     use diesel::query_dsl::RunQueryDsl;
     use diesel::result::Error;
     use factori;
-    use pate_project::establish_connection;
+    use sunday_appetizers::establish_connection;
 
     #[test]
     fn should_insert_customers_correctly() {

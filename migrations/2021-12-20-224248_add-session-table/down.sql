@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS pate.sessions;
+DROP TABLE IF EXISTS store.sessions;

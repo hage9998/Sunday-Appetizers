@@ -36,11 +36,11 @@ impl Product {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::product::product_data::mocks::*;
+    use crate::models::product::products::mocks::*;
     use diesel::connection::Connection;
     use diesel::result::Error;
     use factori;
-    use pate_project::establish_connection;
+    use sunday_appetizers::establish_connection;
 
     #[test]
     fn should_insert_customers_correctly() {

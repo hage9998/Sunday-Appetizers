@@ -12,7 +12,7 @@ extern crate unique_type_id_derive;
 use std::env;
 
 use crate::routes::auth::{login, logout};
-use crate::routes::costumer::configure_service;
+use crate::routes::customer::configure_service;
 use crate::routes::register::configure_service as configure_service_register;
 use crate::utils::db_conn::Pool as NewPool;
 

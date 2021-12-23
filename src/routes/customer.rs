@@ -1,4 +1,4 @@
-use crate::models::customer::customer_data::Customer;
+use crate::models::customer::customers::Customer;
 use crate::models::errors::error::ApiError;
 use crate::routes::auth::Credentials;
 use crate::utils::db_conn::Pool;
@@ -6,7 +6,7 @@ use crate::utils::db_conn::Pool;
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
 // use diesel::PgConnection;
-// use pate_project::establish_connection;
+// use sunday_appetizers::establish_connection;
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/test").route(web::get().to(test)));

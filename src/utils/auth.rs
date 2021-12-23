@@ -1,6 +1,6 @@
 use crate::diesel::QueryDsl;
 use crate::diesel::RunQueryDsl;
-use crate::models::customer::customer_data::Customer;
+use crate::models::customer::customers::Customer;
 use crate::models::errors::error::ApiError;
 use crate::schemas::table_schemas::customers;
 use diesel::prelude::*;

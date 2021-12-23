@@ -14,6 +14,10 @@ table! {
       customer_phone -> Text,
       /// Customer email.
       customer_email -> Text,
+      /// Customer login.
+      login -> Text,
+      /// Customer password.
+      password -> Text,
   }
 }
 
@@ -72,6 +76,20 @@ table! {
       customer_id -> Uuid,
       /// Address id
       address_id -> Integer,
+  }
+}
+
+table! {
+  use diesel::sql_types::*;
+  /// Session.
+  pate.session (id) {
+    ///
+    #[sql_name = "login"]
+    id -> Uuid,
+    ///
+    token -> Text,
+    ///
+    created -> Date,
   }
 }
 

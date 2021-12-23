@@ -1,4 +1,5 @@
 use crate::utils::auth::authenticate;
+use crate::utils::db_conn::Pool;
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -19,10 +20,14 @@ pub struct IndexResponse {
     status: String,
 }
 
-pub async fn login(credentials: web::Json<Credentials>, session: Session) -> Result<HttpResponse> {
+pub async fn login(
+    credentials: web::Json<Credentials>,
+    session: Session,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse> {
     let login = credentials.login.clone();
     let password = credentials.password.clone();
-    let conn = sunday_appetizers::establish_connection();
+    let conn = pool.get_conn();
     let customer_id = credentials.customer_id;
 
     authenticate(&conn, &login, &password, &customer_id)?;
@@ -44,14 +49,3 @@ pub async fn logout(credentials: web::Json<Credentials>, session: Session) -> Re
         Ok("Could not log out anonymous user".into())
     }
 }
-
-// async fn do_something(session: Session) -> Result<HttpResponse> {
-//     let user_id: Option<String> = session.get::<String>("user_id").unwrap();
-//     let counter: i32 = session
-//         .get::<i32>("counter")
-//         .unwrap_or(Some(0))
-//         .map_or(1, |inner| inner + 1);
-//     session.set("counter", counter)?;
-
-//     Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
-// }

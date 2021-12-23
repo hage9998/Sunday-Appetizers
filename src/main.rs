@@ -1,4 +1,3 @@
-pub mod config;
 pub mod models;
 pub mod routes;
 pub mod schemas;
@@ -25,7 +24,7 @@ use rand::Rng;
 // use tokio_postgres::NoTls;
 
 fn configs(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::scope("/api").configure(configure_service))
+    cfg.service(web::scope("/internal").configure(configure_service))
         .service(web::scope("/new").configure(configure_service_register))
         .route("/login", web::post().to(login))
         .route("/logout", web::post().to(logout))

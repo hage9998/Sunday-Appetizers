@@ -25,7 +25,6 @@ pub struct Product {
 }
 
 impl Product {
-    #[allow(dead_code)]
     pub fn create_many(conn: &PgConnection, customer: &[Product]) -> QueryResult<usize> {
         diesel::insert_into(products::table)
             .values(customer)

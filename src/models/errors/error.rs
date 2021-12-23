@@ -31,7 +31,7 @@ impl From<DieselError> for ApiError {
     fn from(error: DieselError) -> ApiError {
         match error {
             DieselError::DatabaseError(_, err) => ApiError::new(409, err.message().to_string()),
-            DieselError::NotFound => ApiError::new(404, "Record not found".to_string()),
+            DieselError::NotFound => ApiError::new(404, "Customer not found".to_string()),
             err => ApiError::new(500, format!("Diesel error: {}", err)),
         }
     }

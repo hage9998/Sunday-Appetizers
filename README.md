@@ -1,1 +1,1 @@
-# pate_project
+# Sunday Appetizers

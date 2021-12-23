@@ -5,9 +5,10 @@ use argon2::Config;
 use diesel::{self, prelude::*, Insertable, QueryDsl, Queryable};
 use diesel::{PgConnection, QueryResult};
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, PartialEq, Clone, Queryable, Identifiable, Insertable, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, Queryable, Identifiable, Insertable, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "customers"]
 pub struct Customer {

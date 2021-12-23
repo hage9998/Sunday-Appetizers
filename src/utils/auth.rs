@@ -17,7 +17,6 @@ pub fn authenticate(
         .first::<Customer>(conn)?;
 
     let pass_validation: bool = user.verify_password(password.as_bytes())?;
-    println!("{:?}", pass_validation);
     if login != user.login || !pass_validation {
         Err(ApiError::new(
             401,

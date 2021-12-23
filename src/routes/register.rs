@@ -1,12 +1,10 @@
 use crate::models::customer::customers::Customer;
+use crate::utils::db_conn::Pool;
 
 use actix_web::Error;
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
-use sunday_appetizers::establish_connection;
 use uuid::Uuid;
-
-// use deadpool_postgres::Pool;
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("register").route(web::post().to(register_new_user)));
@@ -22,7 +20,10 @@ pub struct NewUser {
     password: String,
 }
 
-pub async fn register_new_user(credentials: web::Json<NewUser>) -> Result<HttpResponse, Error> {
+pub async fn register_new_user(
+    credentials: web::Json<NewUser>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, Error> {
     let new_user = Customer {
         id: Uuid::new_v4(),
         first_name: credentials.first_name.clone(),
@@ -33,7 +34,7 @@ pub async fn register_new_user(credentials: web::Json<NewUser>) -> Result<HttpRe
         password: credentials.password.clone(),
     };
 
-    let conn = establish_connection();
+    let conn = pool.get_conn();
     Customer::build(&conn, new_user)?;
 
     Ok(HttpResponse::Ok().body("User created successfully"))

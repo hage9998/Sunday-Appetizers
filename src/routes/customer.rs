@@ -5,15 +5,20 @@ use crate::utils::db_conn::Pool;
 
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
+use serde::{Deserialize, Serialize};
 // use diesel::PgConnection;
-// use sunday_appetizers::establish_connection;
 
-pub fn configure_service(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::resource("/test").route(web::get().to(test)));
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CustomerResponse {
+    customers: Vec<Customer>,
+    total: u32,
 }
 
-// pub  fn test(session: actix_session::Session, db_pool: web::Data<Pool>,) -> HttpResponse {
-pub async fn test(
+pub fn configure_service(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/customers").route(web::get().to(get_all_customers)));
+}
+
+pub async fn get_all_customers(
     session: Session,
     credentials: web::Json<Credentials>,
     pool: web::Data<Pool>,
@@ -22,11 +27,12 @@ pub async fn test(
 
     if let Some(_valid_session) = valid_session {
         let conn = pool.get_conn();
-
         let customers = Customer::list_all(&conn)?;
-        println!("{:?}", &customers);
 
-        Ok(HttpResponse::Ok().body("testando"))
+        Ok(HttpResponse::Ok().json(CustomerResponse {
+            customers: customers.clone(),
+            total: customers.len() as u32,
+        }))
     } else {
         Err(ApiError::new(401, String::from("Invalid credentials")))
     }

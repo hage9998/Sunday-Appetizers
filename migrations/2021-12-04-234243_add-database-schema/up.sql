@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS store.customers(
   password TEXT NOT NULL
 );
 
-CREATE TYPE store.types_prod AS ENUM ('BEBIDA', 'SALGADOS', 'DOCE');
+CREATE TYPE store.types_prod AS ENUM ('DRINK', 'SAVORY', 'SWEET');
 
 CREATE TABLE IF NOT EXISTS store.products(
   product_id SERIAL PRIMARY KEY,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS store.products(
   product_type store.types_prod
 );
 
-CREATE TYPE store.order_status AS ENUM ('CONCLUÍDO', 'EM PREPARO', 'Á CAMINHO', 'PEDIDO ACEITO', 'PEDIDO RECUSADO');
+CREATE TYPE store.order_status AS ENUM ('CONCLUDED', 'IN_PREPARATION', 'IN_DELIVERING', 'ACCEPTED', 'REFUSED');
 
 CREATE TABLE IF NOT EXISTS store.customer_orders_status(
   status_id serial PRIMARY KEY,

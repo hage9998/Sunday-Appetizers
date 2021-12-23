@@ -1649,43 +1649,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pate_project"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-identity",
- "actix-redis",
- "actix-rt",
- "actix-session",
- "actix-web",
- "bigdecimal",
- "chrono",
- "config",
- "deadpool-postgres",
- "diesel",
- "diesel-derive-enum",
- "dotenv",
- "env_logger",
- "factori",
- "heck",
- "listenfd",
- "log",
- "proc-macro2",
- "quote 1.0.10",
- "rand 0.7.3",
- "rust-argon2",
- "serde 1.0.130",
- "serde_json",
- "syn 1.0.82",
- "tokio-pg-mapper",
- "tokio-pg-mapper-derive",
- "tokio-postgres",
- "unique-type-id",
- "unique-type-id-derive",
- "uuid",
-]
-
-[[package]]
 name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2299,6 +2262,43 @@ name = "subtle"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
+
+[[package]]
+name = "sunday_appetizers"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-identity",
+ "actix-redis",
+ "actix-rt",
+ "actix-session",
+ "actix-web",
+ "bigdecimal",
+ "chrono",
+ "config",
+ "deadpool-postgres",
+ "diesel",
+ "diesel-derive-enum",
+ "dotenv",
+ "env_logger",
+ "factori",
+ "heck",
+ "listenfd",
+ "log",
+ "proc-macro2",
+ "quote 1.0.10",
+ "rand 0.7.3",
+ "rust-argon2",
+ "serde 1.0.130",
+ "serde_json",
+ "syn 1.0.82",
+ "tokio-pg-mapper",
+ "tokio-pg-mapper-derive",
+ "tokio-postgres",
+ "unique-type-id",
+ "unique-type-id-derive",
+ "uuid",
+]
 
 [[package]]
 name = "syn"

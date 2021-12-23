@@ -1,9 +1,9 @@
-use crate::models::customer::customer_data::Customer;
+use crate::models::customer::customers::Customer;
 
 use actix_web::Error;
 use actix_web::{web, HttpResponse};
-use pate_project::establish_connection;
 use serde::{Deserialize, Serialize};
+use sunday_appetizers::establish_connection;
 use uuid::Uuid;
 
 // use deadpool_postgres::Pool;

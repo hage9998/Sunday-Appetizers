@@ -1,1 +1,1 @@
-# Pate Project Service Changelog
+# Sunday Appetizers Service Changelog

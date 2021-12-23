@@ -2,7 +2,7 @@ table! {
   use diesel::sql_types::*;
 
   /// Customers.
-  pate.customers (id) {
+  store.customers (id) {
       /// Identifier of the customer.
       #[sql_name = "customer_id"]
       id -> Uuid,
@@ -23,10 +23,10 @@ table! {
 
 table! {
   use diesel::sql_types::*;
-  use crate::models::product::product_data::*;
+  use crate::models::product::products::*;
 
   /// Products.
-  pate.products (id) {
+  store.products (id) {
       /// Identifier of the product.
       #[sql_name = "product_id"]
       id -> Integer,
@@ -42,7 +42,7 @@ table! {
 table! {
   use diesel::sql_types::*;
   /// Adresses.
-  pate.adresses (id) {
+  store.adresses (id) {
       /// Identifier of the address.
       #[sql_name = "address_id"]
       id -> Integer,
@@ -68,7 +68,7 @@ table! {
 table! {
   use diesel::sql_types::*;
   /// Customer Adresses.
-  pate.customer_adresses (id) {
+  store.customer_adresses (id) {
       /// Identifier of the customer address.
       #[sql_name = "customer_address_id"]
       id -> Integer,
@@ -82,7 +82,7 @@ table! {
 table! {
   use diesel::sql_types::*;
   /// Session.
-  pate.session (id) {
+  store.session (id) {
     ///
     #[sql_name = "login"]
     id -> Uuid,

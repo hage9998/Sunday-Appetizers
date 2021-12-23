@@ -69,13 +69,13 @@ impl CustomerAddress {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::address::address_data::mocks::*;
-    use crate::models::customer::customer_data::mocks::*;
-    use crate::models::customer::customer_data::Customer;
+    use crate::models::address::adresses::mocks::*;
+    use crate::models::customer::customers::mocks::*;
+    use crate::models::customer::customers::Customer;
     use diesel::connection::Connection;
     use diesel::result::Error;
     use factori;
-    use pate_project::establish_connection;
+    use sunday_appetizers::establish_connection;
 
     #[test]
     fn should_insert_adresses_correctly() {

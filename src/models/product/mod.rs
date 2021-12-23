@@ -1,1 +1,1 @@
-pub mod product_data;
+pub mod products;

@@ -122,7 +122,7 @@ mod tests {
         conn.test_transaction::<_, Error, _>(|| {
             let adresses = vec![factori::create!(Address)];
             Address::create_many(&conn, &adresses).unwrap();
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![factori::create!(Customer), factori::create!(Customer, login: "test".to_string())];
             Customer::create_many(&conn, &customers).unwrap();
             let customer_adresses = factori::create!(CustomerAddress, customer_id:customers[0].id, address_id:adresses[0].id);
             CustomerAddress::create(&conn, &customer_adresses).unwrap();

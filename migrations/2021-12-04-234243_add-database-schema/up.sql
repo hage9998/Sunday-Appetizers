@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS store.customers(
   last_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
   customer_email TEXT NOT NULL,
-  login TEXT NOT NULL,
+  login TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL
 );
 

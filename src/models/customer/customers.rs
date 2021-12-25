@@ -77,7 +77,7 @@ mod tests {
     fn should_insert_customers_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![factori::create!(Customer), factori::create!(Customer, login: "test".to_string())];
             Customer::create_many(&conn, &customers).unwrap();
             let customers_result = customers::table.load::<Customer>(&conn)?;
             assert_eq!(customers_result, customers);
@@ -89,7 +89,7 @@ mod tests {
     fn should_list_all_customers_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![factori::create!(Customer), factori::create!(Customer, login: "test".to_string())];
             Customer::create_many(&conn, &customers).unwrap();
             let customers_result = Customer::list_all(&conn).unwrap();
             assert_eq!(customers_result.len(), 2);

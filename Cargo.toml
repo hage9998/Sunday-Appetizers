@@ -26,7 +26,7 @@ listenfd = "0.3"
 rand = "0.7.3"
 rust-argon2 = "0.5"
 log = "0.4"
-actix-redis = { version = "0.9", features = ["web"] }
+actix-redis = { version = "0.9.1", features = ["web"] }
 actix-session = "0.4.0"
 actix-identity = "0.3.1"
 actix-cors = "0.5"
@@ -34,7 +34,12 @@ config = "0.10.1"
 tokio-pg-mapper = "0.1"
 tokio-pg-mapper-derive = "0.1"
 tokio-postgres = { version="0.5.1", features=["with-chrono-0_4"] }
-actix-rt = "1.0.0"
+actix-rt = "2.5.0"
+tokio = { version = "1.15.0", features = ["full"] }
+bytes = { version = "1", features = ["serde"] }
+r2d2 = "0.8.8"
+r2d2-diesel = "1.0.0"
+
 
 [dependencies.diesel]
 features = ["chrono", "postgres", "r2d2", "uuidv07", "64-column-tables", "numeric"]

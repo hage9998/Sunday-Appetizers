@@ -93,5 +93,20 @@ table! {
   }
 }
 
+table! {
+  use diesel::sql_types::*;
+  use crate::models::customer::orders_status::*;
+  /// Customer Order Status.
+  store.customer_orders_status (id) {
+    /// Status Id
+    #[sql_name = "status_id"]
+    id -> Integer,
+    /// Status Name
+    status_name -> TypesStatusMapping,
+    /// Status Description
+    status_description -> Text,
+  }
+}
+
 allow_tables_to_appear_in_same_query!(customer_adresses, adresses);
 joinable!(customer_adresses -> adresses (address_id));

@@ -9,9 +9,9 @@ use diesel_derive_enum::DbEnum;
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[DbValueStyle = "SCREAMING_SNAKE_CASE"]
 pub enum TypesProd {
-    Bebida,
-    Salgados,
-    Doce,
+    Drink,
+    Savory,
+    Sweet,
 }
 
 #[derive(Insertable, Debug, PartialEq, Clone, Queryable, Identifiable, serde::Serialize)]
@@ -42,13 +42,13 @@ mod tests {
     use sunday_appetizers::establish_connection;
 
     #[test]
-    fn should_insert_customers_correctly() {
+    fn should_insert_product_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
-            let customers = vec![factori::create!(Product)];
-            Product::create_many(&conn, &customers).unwrap();
-            let customers_result = products::table.load::<Product>(&conn).unwrap();
-            assert_eq!(customers_result, customers);
+            let products = vec![factori::create!(Product)];
+            Product::create_many(&conn, &products).unwrap();
+            let products_result = products::table.load::<Product>(&conn).unwrap();
+            assert_eq!(products_result, products);
             Ok(())
         });
     }
@@ -63,7 +63,7 @@ pub mod mocks {
             id = 1,
             product_price = BigDecimal::from(20),
             product_name = String::from("Coxinha"),
-            product_type = TypesProd::Salgados,
+            product_type = TypesProd::Drink,
         }
     });
 }

@@ -1,7 +1,9 @@
-use crate::schemas::table_schemas::customer_orders_status;
+use crate::schemas::table_schemas::{customer_orders, customer_orders_status};
+use chrono::NaiveDateTime;
 use diesel::{self, prelude::*, Insertable, Queryable};
 use diesel::{PgConnection, QueryResult};
 use diesel_derive_enum::DbEnum;
+use uuid::Uuid;
 
 #[derive(DbEnum, Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -12,6 +14,20 @@ pub enum TypesStatus {
     InDelivering,
     Accepted,
     Refused,
+}
+
+#[derive(
+    Associations, Insertable, Debug, PartialEq, Clone, Queryable, Identifiable, serde::Serialize,
+)]
+#[serde(rename_all = "camelCase")]
+#[table_name = "customer_orders"]
+#[belongs_to(Customer, OrdersStatus foreign_key= "customer_id, order_status_code")]
+pub struct Orders {
+    id: i32,
+    customer_id: Uuid,
+    order_status_code: i32,
+    date_order_placed: NaiveDateTime,
+    date_order_paid: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug, PartialEq, Clone, Queryable, Identifiable, serde::Serialize)]
@@ -44,9 +60,19 @@ impl OrdersStatus {
     }
 }
 
+impl Orders {
+    pub fn create(conn: &PgConnection, order: &Orders) -> QueryResult<usize> {
+        diesel::insert_into(customer_orders::table)
+            .values(order)
+            .execute(conn)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::models::customer::customers::mocks::*;
+    use crate::models::customer::customers::Customer;
     use crate::models::customer::orders_status::mocks::*;
     use diesel::connection::Connection;
     use diesel::result::Error;
@@ -77,6 +103,22 @@ mod tests {
             Ok(())
         });
     }
+
+    #[test]
+    fn should_insert_order_correctly() {
+        let conn = establish_connection();
+        conn.test_transaction::<_, Error, _>(|| {
+            let order_status = factori::create!(OrdersStatus);
+            OrdersStatus::create_many(&conn, &order_status).unwrap();
+            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            Customer::create_many(&conn, &customers).unwrap();
+            let order = factori::create!(Orders, customer_id:customers[0].id);
+            Orders::create(&conn, &order).unwrap();
+            let order_result = customer_orders::table.first::<Orders>(&conn)?;
+            assert_eq!(order_result, order);
+            Ok(())
+        });
+    }
 }
 
 pub mod mocks {
@@ -88,6 +130,17 @@ pub mod mocks {
             id = 1,
             status_description = String::from("Produto em rota de entrega"),
             status_name = TypesStatus::InDelivering,
+        }
+    });
+
+    factori::factori!(Orders, {
+        default {
+            id = 1,
+            customer_id = Uuid::new_v4(),
+            order_status_code = 1,
+            date_order_placed = NaiveDateTime::from_timestamp(1_000_000_000, 0),
+            date_order_paid = NaiveDateTime::from_timestamp(1_000_000_000, 0),
+
         }
     });
 }

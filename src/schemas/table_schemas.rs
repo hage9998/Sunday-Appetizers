@@ -108,5 +108,23 @@ table! {
   }
 }
 
+table! {
+  use diesel::sql_types::*;
+  /// Customer Order.
+  store.customer_orders (id) {
+    /// Order Id
+    #[sql_name = "order_id"]
+    id -> Integer,
+    /// Customer Id
+    customer_id -> Uuid,
+    /// Order Status Code
+    order_status_code -> Integer,
+    /// Date Order Placed
+    date_order_placed -> Timestamp,
+    /// Date Order Paid
+    date_order_paid -> Timestamp,
+  }
+}
+
 allow_tables_to_appear_in_same_query!(customer_adresses, adresses);
 joinable!(customer_adresses -> adresses (address_id));

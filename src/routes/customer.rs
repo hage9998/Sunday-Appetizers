@@ -1,13 +1,11 @@
-use crate::models::customer::customers::Customer;
 use crate::models::errors::error::ApiError;
-use crate::routes::auth::SessionAuth;
-use crate::utils::auth::is_logged_in;
 use crate::utils::db_conn::Pool;
+use crate::{models::customer::customers::Customer, utils::auth::is_logged_in};
 
+use super::auth::SessionAuth;
 use actix_session::Session;
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
-// use diesel::PgConnection;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CustomerResponse {
@@ -20,9 +18,9 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 }
 
 pub async fn get_all_customers(
-    session: Session,
     credentials: web::Json<SessionAuth>,
     pool: web::Data<Pool>,
+    session: Session,
 ) -> Result<HttpResponse, ApiError> {
     is_logged_in(session, &credentials.session_token)?;
 
@@ -37,49 +35,57 @@ pub async fn get_all_customers(
 
 #[cfg(test)]
 mod tests {
-    use std::env;
 
     use crate::{
-        configs,
-        routes::{auth::{IndexResponse, login, Credentials}, customer::CustomerResponse},
+        models::customer::customers::mocks::*,
+        models::customer::customers::Customer,
+        routes::{auth::SessionAuth, customer::CustomerResponse},
         utils::test_route::test_service,
     };
-    use actix_redis::RedisSession;
     use actix_web::{
-        http::{header, StatusCode},
-        test::{self, TestRequest},
-        web, App, HttpResponse,
-    };
-    use bytes::Bytes;
-    use serde_json::json;
-    use sunday_appetizers::establish_connection;
-
-    use crate::utils::db_conn::Pool as NewPool;
-    use diesel::{
-        r2d2::{ConnectionManager, Pool},
-        PgConnection,
+        dev::Service,
+        test::{self, read_body_json, TestRequest},
     };
 
     #[actix_rt::test]
-    async fn should_list_all_customers_correctly2() {
-  {          let request_body = Credentials{
-                login: "lobo".to_string(),
-                password: "123".to_string(),
-            };
+    async fn should_get_all_customers_correctly() {
+        {
+            {
+                let (app, pool) = test_service().await;
+                let mut app = test::init_service(app).await;
+                let request = test::TestRequest::get().to_request();
+                let response = app.call(request).await.unwrap();
+                let cookie = response
+                    .response()
+                    .cookies()
+                    .find(|c| c.name() == "actix-test")
+                    .unwrap()
+                    .clone();
 
-            let pool = NewPool::test_pool().await;
-            // let s = RedisSession::new("127.0.0.1:6379", &[0;32]);
-            let mut app = test::init_service(App::new().data(pool.clone()).route("/login", web::post().to(login))).await;
+                let payload = SessionAuth {
+                    session_token: "counter".to_string(),
+                    login: "login".to_string(),
+                };
+                let customers_new = {
+                    let conn = pool.get_conn();
+                    let customers = vec![factori::create!(Customer, password: "".to_string())];
+                    Customer::create_many(&conn, &customers).unwrap();
+                    customers
+                };
 
-            let response = TestRequest::post()
-                .uri("/login")
-                .set_json(&request_body)
-                .send_request(&mut app)
-                .await;
-            println!("Logged");
-            
+                let path = "/internal/customers";
+                let req = TestRequest::get()
+                    .uri(path)
+                    .cookie(cookie)
+                    .set_json(&payload)
+                    .to_request();
+                let res = test::call_service(&mut app, req).await;
+                let body: CustomerResponse = read_body_json(res).await;
+                let CustomerResponse { customers, total } = body;
 
-            //   let respo: IndexResponse = test::read_body_json(resp).await;
-            assert_eq!(response.status(), StatusCode::OK);}
+                assert_eq!(total, 1);
+                assert_eq!(customers, customers_new);
+            }
+        }
     }
 }

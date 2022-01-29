@@ -31,7 +31,6 @@ pub async fn login(
     session: Session,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse> {
-    println!("asdas");
     let login = credentials.login.clone();
     let password = credentials.password.clone();
     let conn = pool.get_conn();
@@ -57,7 +56,7 @@ pub async fn login(
 
 pub async fn logout(credentials: web::Json<SessionAuth>, session: Session) -> Result<HttpResponse> {
     let id: Option<i32> = session.get(&credentials.session_token)?;
-    if let Some(_) = id {
+    if id.is_some() {
         session.purge();
         Ok(format!("Logged out: {}", credentials.login).into())
     } else {

@@ -22,7 +22,7 @@ pub fn authenticate(conn: &PgConnection, login: &str, password: &str) -> Result<
     }
 }
 
-pub fn is_logged_in(session: Session, token: &String) -> Result<(), ApiError> {
+pub fn is_logged_in(session: Session, token: &str) -> Result<(), ApiError> {
     let valid_session = session.get::<i32>(token);
 
     match valid_session {

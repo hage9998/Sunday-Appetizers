@@ -110,7 +110,10 @@ mod tests {
         conn.test_transaction::<_, Error, _>(|| {
             let order_status = factori::create!(OrdersStatus);
             OrdersStatus::create_many(&conn, &order_status).unwrap();
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![
+                factori::create!(Customer),
+                factori::create!(Customer, login: "test".to_string()),
+            ];
             Customer::create_many(&conn, &customers).unwrap();
             let order = factori::create!(Orders, customer_id:customers[0].id);
             Orders::create(&conn, &order).unwrap();

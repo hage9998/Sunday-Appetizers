@@ -3,17 +3,12 @@ use crate::diesel::RunQueryDsl;
 use crate::models::customer::customers::Customer;
 use crate::models::errors::error::ApiError;
 use crate::schemas::table_schemas::customers;
+use actix_session::Session;
 use diesel::prelude::*;
-use uuid::Uuid;
 
-pub fn authenticate(
-    conn: &PgConnection,
-    login: &str,
-    password: &str,
-    customer_id: &Uuid,
-) -> Result<(), ApiError> {
+pub fn authenticate(conn: &PgConnection, login: &str, password: &str) -> Result<(), ApiError> {
     let user = customers::table
-        .filter(customers::id.eq(&customer_id))
+        .filter(customers::login.eq(&login))
         .first::<Customer>(conn)?;
 
     let pass_validation: bool = user.verify_password(password.as_bytes())?;
@@ -24,5 +19,14 @@ pub fn authenticate(
         ))
     } else {
         Ok(())
+    }
+}
+
+pub fn is_logged_in(session: Session, token: &str) -> Result<(), ApiError> {
+    let valid_session = session.get::<i32>(token);
+
+    match valid_session {
+        Ok(Some(_)) => Ok(()),
+        _ => Err(ApiError::new(401, String::from("Invalid credentials"))),
     }
 }

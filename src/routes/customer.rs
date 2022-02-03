@@ -1,12 +1,11 @@
-use crate::models::customer::customers::Customer;
 use crate::models::errors::error::ApiError;
-use crate::routes::auth::Credentials;
 use crate::utils::db_conn::Pool;
+use crate::{models::customer::customers::Customer, utils::auth::is_logged_in};
 
+use super::auth::SessionAuth;
 use actix_session::Session;
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
-// use diesel::PgConnection;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CustomerResponse {
@@ -19,32 +18,74 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 }
 
 pub async fn get_all_customers(
-    session: Session,
-    credentials: web::Json<Credentials>,
+    credentials: web::Json<SessionAuth>,
     pool: web::Data<Pool>,
+    session: Session,
 ) -> Result<HttpResponse, ApiError> {
-    let valid_session = session.get::<String>(&credentials.login).unwrap();
+    is_logged_in(session, &credentials.session_token)?;
 
-    if let Some(_valid_session) = valid_session {
-        let conn = pool.get_conn();
-        let customers = Customer::list_all(&conn)?;
+    let conn = pool.get_conn();
+    let customers = Customer::list_all(&conn)?;
 
-        Ok(HttpResponse::Ok().json(CustomerResponse {
-            customers: customers.clone(),
-            total: customers.len() as u32,
-        }))
-    } else {
-        Err(ApiError::new(401, String::from("Invalid credentials")))
-    }
+    Ok(HttpResponse::Ok().json(CustomerResponse {
+        customers: customers.clone(),
+        total: customers.len() as u32,
+    }))
 }
 
-// async fn do_something(session: Session) -> Result<HttpResponse> {
-//     let user_id: Option<String> = session.get::<String>("user_id").unwrap();
-//     let counter: i32 = session
-//         .get::<i32>("counter")
-//         .unwrap_or(Some(0))
-//         .map_or(1, |inner| inner + 1);
-//     session.set("counter", counter)?;
+#[cfg(test)]
+mod tests {
 
-//     Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
-// }
+    use crate::{
+        models::customer::customers::mocks::*,
+        models::customer::customers::Customer,
+        routes::{auth::SessionAuth, customer::CustomerResponse},
+        utils::test_route::test_service,
+    };
+    use actix_web::{
+        dev::Service,
+        test::{self, read_body_json, TestRequest},
+    };
+
+    #[actix_rt::test]
+    async fn should_get_all_customers_correctly() {
+        {
+            {
+                let (app, pool) = test_service().await;
+                let mut app = test::init_service(app).await;
+                let request = test::TestRequest::get().to_request();
+                let response = app.call(request).await.unwrap();
+                let cookie = response
+                    .response()
+                    .cookies()
+                    .find(|c| c.name() == "actix-test")
+                    .unwrap()
+                    .clone();
+
+                let payload = SessionAuth {
+                    session_token: "counter".to_string(),
+                    login: "login".to_string(),
+                };
+                let customers_new = {
+                    let conn = pool.get_conn();
+                    let customers = vec![factori::create!(Customer, password: "".to_string())];
+                    Customer::create_many(&conn, &customers).unwrap();
+                    customers
+                };
+
+                let path = "/internal/customers";
+                let req = TestRequest::get()
+                    .uri(path)
+                    .cookie(cookie)
+                    .set_json(&payload)
+                    .to_request();
+                let res = test::call_service(&mut app, req).await;
+                let body: CustomerResponse = read_body_json(res).await;
+                let CustomerResponse { customers, total } = body;
+
+                assert_eq!(total, 1);
+                assert_eq!(customers, customers_new);
+            }
+        }
+    }
+}

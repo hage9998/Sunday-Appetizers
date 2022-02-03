@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone, Queryable, Identifiable, Insertable, Serialize, Deserialize)]
+#[serde(default)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "customers"]
 pub struct Customer {
@@ -20,6 +21,20 @@ pub struct Customer {
     pub login: String,
     #[serde(skip_serializing)]
     pub password: String,
+}
+
+impl Default for Customer {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            first_name: Default::default(),
+            last_name: Default::default(),
+            customer_phone: Default::default(),
+            customer_email: Default::default(),
+            login: Default::default(),
+            password: Default::default(),
+        }
+    }
 }
 
 impl Customer {
@@ -77,7 +92,10 @@ mod tests {
     fn should_insert_customers_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![
+                factori::create!(Customer),
+                factori::create!(Customer, login: "login2".to_string()),
+            ];
             Customer::create_many(&conn, &customers).unwrap();
             let customers_result = customers::table.load::<Customer>(&conn)?;
             assert_eq!(customers_result, customers);
@@ -89,7 +107,10 @@ mod tests {
     fn should_list_all_customers_correctly() {
         let conn = establish_connection();
         conn.test_transaction::<_, Error, _>(|| {
-            let customers = vec![factori::create!(Customer), factori::create!(Customer)];
+            let customers = vec![
+                factori::create!(Customer),
+                factori::create!(Customer, login: "test".to_string()),
+            ];
             Customer::create_many(&conn, &customers).unwrap();
             let customers_result = Customer::list_all(&conn).unwrap();
             assert_eq!(customers_result.len(), 2);

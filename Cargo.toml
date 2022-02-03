@@ -14,28 +14,20 @@ factori = "1.1.0"
 diesel-derive-enum = { version = "1.1.1", features = ["postgres"] }
 bigdecimal = { version = "0.1.2", features = ["serde"] }
 proc-macro2 = "1.0.29"
-quote = "1.0.9"
-heck = "0.3.3"
-syn = { version = "1.0.77", features = ["full"] }
 actix-web = "3.3.2"
-env_logger="0.6"
 serde_json="1.0"
 unique-type-id-derive = "0.2"
 unique-type-id = "0.2"
-listenfd = "0.3"
 rand = "0.7.3"
 rust-argon2 = "0.5"
 log = "0.4"
-actix-redis = { version = "0.9", features = ["web"] }
+actix-redis = { version = "0.9.1", features = ["web"] }
 actix-session = "0.4.0"
-actix-identity = "0.3.1"
 actix-cors = "0.5"
-config = "0.10.1"
-tokio-pg-mapper = "0.1"
-tokio-pg-mapper-derive = "0.1"
-tokio-postgres = { version="0.5.1", features=["with-chrono-0_4"] }
-actix-rt = "1.0.0"
-
+actix-rt = "2.5.0"
+r2d2 = "0.8.8"
+actix-service = "1.0.1"
+ 
 [dependencies.diesel]
 features = ["chrono", "postgres", "r2d2", "uuidv07", "64-column-tables", "numeric"]
 version = "1.4.8"
